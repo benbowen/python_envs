@@ -13,12 +13,14 @@ This environment is designed for **Perlmutter GPU (A100)** and **CPU (Milan)** n
 * **Manager:** Standard Conda (via `module load python`)
 
 ## 📂 Locations
+* **Source Code:** `~/repos/python_envs/nersc-neural`
 * **Environment:** `/pscratch/sd/b/bpb/python_envs/nersc-neural`
 * **HF Cache:** `/pscratch/sd/b/bpb/python_envs/.hf_cache` (Shared across NERSC envs)
 * **Secrets:** `/global/u2/b/bpb/secrets/nersc_hugging_face_token.txt` (Safe in Home)
 
 ## 🚀 Installation
-Since NERSC uses modules, we use a build script instead of Pixi.
+
+Since NERSC uses modules, we use a build script to construct the environment on Scratch.
 
 1.  **Login to Perlmutter:**
     ```bash
@@ -31,36 +33,52 @@ Since NERSC uses modules, we use a build script instead of Pixi.
     ```
 
 3.  **Run the Build Script:**
-    This will load the NERSC python module, create the env in scratch, and install PyTorch.
+    This loads the NERSC modules, creates the environment in scratch, and installs PyTorch (CUDA 12.1).
     ```bash
     bash build_env.sh
     ```
 
-## 💻 Usage (Jupyter)
-1.  Go to [https://jupyter.nersc.gov](https://jupyter.nersc.gov)
-2.  Start a server (CPU or GPU Shared).
-3.  Select Kernel: **`NERSC Neural (Scratch)`**
+4.  **Register the Jupyter Kernel (Optional):**
+    If you want to use this in NERSC Jupyter notebooks with secrets auto-loaded:
+    ```bash
+    bash activate_env.sh
+    python register_kernel_advanced.py
+    ```
 
-## 💻 Usage (Slurm Batch Scripts)
-To use this in a batch job (`sbatch`), you must load the environment manually:
+## 💻 Interactive Usage
+
+To jump into the environment from a login node or interactive session, simply source the helper script. It handles modules, activation, and secrets automatically.
+
+```bash
+source activate_env.sh
+````
+
+## 💻 Slurm Batch Usage
+
+Use `activate_env.sh` to simplify your submission scripts.
 
 ```bash
 #!/bin/bash
+#SBATCH -J neural-train
 #SBATCH -C gpu
 #SBATCH -q regular
 #SBATCH -t 1:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --gpus-per-task=1
+#SBATCH --gpus-per-task=4
 
-# 1. Load NERSC Python
-module load python
+# 1. Activate Environment (Modules + Conda + Secrets)
+source ~/repos/python_envs/nersc-neural/activate_env.sh
 
-# 2. Activate your scratch environment
-source activate /pscratch/sd/b/bpb/python_envs/nersc-neural
+# 2. Run Code
+# (Example: Distributed training on 4 GPUs)
+srun python train_script.py
+```
 
-# 3. Inject Secrets (Critical!)
-source load_secrets.sh
+## 🌐 Multi-GPU Note
 
-# 4. Run Code
-srun python my_training_script.py
+Perlmutter GPU nodes have 4x A100 GPUs. The environment includes `torch` with CUDA support.
+
+  * **Check visibility:** Run `python -c "import torch; print(torch.cuda.device_count())"` (Should output `4` on a GPU node).
+
+
