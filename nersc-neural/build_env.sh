@@ -48,7 +48,8 @@ pip install transformers \
             pandas \
             numpy \
             scipy \
-            tqdm \
+            adapters \
+	    tqdm \
             ipykernel \
             faiss-gpu   # NERSC has GPUs, so we use the GPU version if possible
 

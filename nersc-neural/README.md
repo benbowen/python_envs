@@ -45,6 +45,79 @@ Since NERSC uses modules, we use a build script to construct the environment on 
     python register_kernel_advanced.py
     ```
 
+## ⚡️ Verification & Testing (Fast Queues)
+
+Do not submit to the `regular` queue for debugging. Use these methods to get instant access to GPU nodes.
+
+### Pre-fetch Models (Login Node):
+CRITICAL: Compute nodes do not have internet access. Run the test script on the login node first to download models to the cache.
+
+```bash
+source activate_env.sh
+python test_specter.py
+# Verify that models downloaded successfully (ignore "No GPU" warnings)
+```
+
+### Option A: Interactive Session (Instant Shell)
+Use `salloc` to get a shell on a compute node immediately. This is best for exploring code or running `ipython`.
+
+```bash
+# Request 1 GPU node for 30 minutes in the "interactive" QOS
+# Replace 'm1234' with your NERSC repo name (add '_g' if required for GPUs)
+salloc -N 1 -C gpu -q interactive -t 30 -G 4 -A m2650_g
+
+# Once the prompt returns (you are now on a compute node):
+source activate_env.sh
+python verify_nersc.py
+python test_specter.py
+exit # checking out
+```
+
+Option B: Debug Queue (Short Batch Job)
+Use the debug QOS for testing submission scripts. It has a higher priority but a strictly enforced 30-minute limit.
+
+1. Create a test script debug_test.slurm:
+
+```bash
+#!/bin/bash
+#SBATCH -J neural-debug
+#SBATCH -C gpu
+#SBATCH -q debug
+#SBATCH -t 00:10:00
+#SBATCH -N 1
+#SBATCH --gpus-per-node=4
+#SBATCH -A m1234_g  # <--- REMEMBER YOUR ACCOUNT
+
+source activate_env.sh
+python verify_nersc.py
+```
+
+2. Submit it:
+
+```bash
+sbatch debug_test.slurm
+```
+
+3. Watch it run:
+
+```bash
+sq  # NERSC shortcut for 'squeue -u $USER'
+cat neural-debug-*.out
+```
+
+Option C: Jupyter (Interactive Notebook)
+Login to jupyter.nersc.gov.
+Server Options: Select "GPU Shared" (Starts faster than Exclusive).
+Create a new notebook.
+Select Kernel: NERSC Neural (Scratch + Secrets).
+
+Run:
+
+```python
+import torch
+print(torch.cuda.is_available())
+```
+
 ## 💻 Interactive Usage
 
 To jump into the environment from a login node or interactive session, simply source the helper script. It handles modules, activation, and secrets automatically.
