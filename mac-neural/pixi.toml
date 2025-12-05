@@ -1,0 +1,57 @@
+[workspace]
+name = "mac-neural"
+version = "0.1.0"
+description = "Apple Silicon optimized environment for HF Transformers, Specter, and Faiss"
+authors = ["BPB"]
+# CHANGE 1: Removed "pytorch" channel. 
+# "conda-forge" now handles everything (Torch, Faiss, System Libs) ensuring perfect compatibility.
+channels = ["conda-forge"] 
+platforms = ["osx-arm64"] 
+
+[dependencies]
+# --- Core Python ---
+python = "3.11.*"
+pip = "*"
+
+# --- Heavy Compute (Apple Silicon Optimized) ---
+# conda-forge provides these with full MPS (Mac GPU) support
+pytorch = "*" 
+torchvision = "*"
+torchaudio = "*"
+
+# --- Search & Vector Math ---
+faiss-cpu = "*" 
+
+# --- Data Science Standard Libs ---
+numpy = "*"
+pandas = "*"
+scipy = "*"
+tqdm = "*"
+scikit-learn = "*"
+statsmodels = "*"
+networkx = "*"
+pingouin = "*"
+
+# --- Visualization ---
+matplotlib = "*"
+seaborn = "*"
+
+# --- Interactive Tools ---
+jupyterlab = "*"
+ipykernel = "*"
+ipywidgets = "*"
+jupyterlab_widgets = "*"
+
+[pypi-dependencies]
+# --- The Hugging Face Stack ---
+transformers = "*"
+adapters = "*" 
+datasets = "*"
+accelerate = "*"
+tokenizers = "*"
+huggingface_hub = "*"
+sentencepiece = "*"
+
+[activation]
+env = { HF_HOME = "./.hf_cache" }
+scripts = ["load_secrets.sh"]

@@ -1,0 +1,6 @@
+# pixi environments
+.pixi/*
+!.pixi/iconfig.toml
+.hf_cache/
+.DS_Store
+load_secrets.sh
