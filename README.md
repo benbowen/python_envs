@@ -1,4 +1,8 @@
-# 🧪 Research Python Environments
+# 🧪 Research Blueprint for Python Environments
+
+Scientific computing requires specific hardware optimization making a "one-size-fits-all" Python environment hard to achieve. This is an attempt to organize the "what" or things I work on with the "where" or the computer I work on. It goes without saying it is a work in progress.
+
+![Infographic](python_envs_infographic.png)
 
 This repository acts as the central catalog for my research computing environments. 
 
