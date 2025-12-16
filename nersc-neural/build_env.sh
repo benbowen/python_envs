@@ -42,12 +42,15 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 echo "-> Installing HF Transformers & Science tools..."
 pip install transformers \
             datasets \
+            tables \
             accelerate \
             huggingface_hub \
             scikit-learn \
             pandas \
             numpy \
             scipy \
+            matplotlib \
+            seaborn \
             adapters \
 	    tqdm \
             ipykernel \
